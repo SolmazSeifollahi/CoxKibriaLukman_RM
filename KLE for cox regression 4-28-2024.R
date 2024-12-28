@@ -16,13 +16,10 @@ source("MSEandMAE.R")
 CoxKL<- function(n, p, tau, CP, rho, m){
   #true value of the parameters
   Tbeta<- c(-0.5, 0.8, -0.4, 0.9)
-  #Tbeta<- c(-0.5, 0.8, -0.4, 0.9, 0.5, -0.5)
-  
+   
   MPLE<- matrix(ncol = p, nrow = m)
   Liu1<- matrix(ncol = p, nrow = m)
-  RE1<- matrix(ncol = p, nrow = m)
   RE2<- matrix(ncol = p, nrow = m)
-  KLE1<- matrix(ncol = p, nrow = m)
   KLE2<- matrix(ncol = p, nrow = m)
   KLE3<- matrix(ncol = p, nrow = m)
   KLE4<- matrix(ncol = p, nrow = m)
@@ -73,46 +70,36 @@ CoxKL<- function(n, p, tau, CP, rho, m){
     dopt<- sum(a1)/ sum(a2)
     
     #estimators
+    # Liu estimator
     Liu1[u,]<- solve(DTD+I)%*%(DTD+as.numeric(dopt)*I)%*%MPLE[u,]
-    #Liu1[u,]<- solve(DTD+I)%*%(DTD+as.numeric(dopt)*I)%*%MPLE[u,]
-    
-    
-    #RE1[u,]<- solve(DTD+as.numeric(r1)*I)%*%DTD%*%MPLE[u,]
+
+    # Ridge estimator
     RE2[u,]<- solve(DTD+as.numeric(r2)*I)%*%DTD%*%MPLE[u,]
     
-    #KLE1[u,]<- solve(DTD+as.numeric(r1)*I)%*%(DTD-as.numeric(r1)*I)%*%MPLE[u,]
+    # KL estimator
     KLE2[u,]<- solve(DTD+as.numeric(r2)*I)%*%(DTD-as.numeric(r2)*I)%*%MPLE[u,]
     KLE3[u,]<- solve(DTD+as.numeric(r3)*I)%*%(DTD-as.numeric(r3)*I)%*%MPLE[u,]
     KLE4[u,]<- solve(DTD+as.numeric(r4)*I)%*%(DTD-as.numeric(r4)*I)%*%MPLE[u,]
     KLE5[u,]<- solve(DTD+as.numeric(r5)*I)%*%(DTD-as.numeric(r5)*I)%*%MPLE[u,]
   }
-  
-  
+
+  # outputs
   TMS1<- output(MPLE, Tbeta)
   TMS2<- output(Liu1, Tbeta)
-  #TMS3<- output(RE1, Tbeta)
   TMS4<- output(RE2, Tbeta)
-  #TMS5<- output(KLE1, Tbeta)
   TMS6<- output(KLE2, Tbeta)
   TMS7<- output(KLE3, Tbeta)
   TMS8<- output(KLE4, Tbeta)
   TMS9<- output(KLE5, Tbeta)
-  #TMS10<- output(Liu2, Tbeta)
-  
-  
-  
+    
   TMSE<- c(TMS1$MSE, TMS2$MSE, TMS4$MSE, TMS6$MSE, TMS9$MSE, TMS7$MSE, TMS8$MSE)
-  
   TMAE<- c(TMS1$MAE, TMS2$MAE, TMS4$MAE, TMS9$MAE, TMS6$MAE, TMS7$MAE, TMS8$MAE)
-  
-  TBias<- c(TMS1$Bias, TMS2$Bias, TMS4$Bias, TMS6$Bias, TMS9$Bias, TMS7$Bias, TMS8$Bias)
-  
-  OUTFINAL<- matrix(nrow = 3, ncol = 7)
-  row.names(OUTFINAL)<- c("MSE", "MAE", "Bias")
+    
+  OUTFINAL<- matrix(nrow = 2, ncol = 7)
+  row.names(OUTFINAL)<- c("MSE", "MAE")
   OUTFINAL[1,]<- TMSE
   OUTFINAL[2,]<- TMAE
-  OUTFINAL[3,]<- TBias
-  
+
   OUTFINAL
 }
 
